@@ -1,0 +1,57 @@
+<html>
+<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+<script>
+
+
+document.addEventListener("DOMContentLoaded", () =>{
+    let marker = document.querySelector("#marker")
+    let sp = document.querySelector("#marker1")
+    var flag = false;
+    marker.addEventListener('markerFound', function() {
+        if (!flag) sp.emit("up")
+        flag = true;
+        //console.log('up fuck')
+    })
+    sp.addEventListener('up', function(){
+        setTimeout(() => {
+            sp.emit("down")
+            //console.log('down fuck')
+        }, 500)
+    })
+    sp.addEventListener('down',function(){
+        setTimeout(() => {
+            sp.emit("up");
+            //console.log('up again fuck')
+        }, 500)
+    })
+
+})
+</script>
+
+
+<body style="margin : 0px; overflow: hidden;">
+<a-scene embedded arjs>
+<a-assets>
+<img id ="img" src="texture.png">
+</a-assets>
+<a-marker id= "marker" preset="kanji">
+
+
+<a-sphere 
+    id="marker1" 
+    src="#img" 
+    position="0 0 0" 
+    rotation="0 0 0"
+    radius="0.5"
+    animation__1="property: position; from:0 0 0; to: 0 5 0; dur: 500; easing: easeOutQuad; startEvents: up;"
+    animation__2="property: position; from:0 5 0; to: 0 0 0; dur: 500; easing: easeInQuad; startEvents: down;"
+    >
+</a-shpere>
+
+
+</a-marker>
+<a-entity camera></a-entity>
+</a-scene>
+</body>
+</html>

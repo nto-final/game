@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+   <title>7</title>
+   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  
+   <body style="margin : 0px; overflow: hidden;">
+       <a-scene
+           embedded
+           arjs
+           renderer="logarithmicDepthBuffer: true;"
+           id="scene"
+           >
+        <a-marker id="marker_1" type="pattern" url="letterB.patt" material="" arjs-hit-testing="" visible="">
+            <a-sphere position="0 0 0" radius="1.25" color="red" scale="0.1 0.1 0.1" material="" geometry=""></a-sphere>
+        </a-marker>
+        <a-marker preset='custom' type='pattern' url='letterA.patt' id="marker_3">
+            <a-sphere position="0 0 0" radius="1.25" color="red" scale="0.1 0.1 0.1" material="" geometry=""></a-sphere>
+        </a-marker>
+        <a-marker id="marker_3" preset="kanji" material="" arjs-hit-testing="" visible="">
+            <a-sphere position="0 0 0" radius="1.25" color="white" scale="0.1 0.1 0.1" material="" geometry=""></a-sphere>
+        </a-marker>
+        
+       <a-entity camera></a-entity>
+       </a-scene>
+
+       <script>
+        var marker = document.getElementById('marker_2')
+        marker.addEventListener('markerFound', function(e) {
+            var parentMarker = document.getElementById('marker_1')
+            var markerPos = new THREE.Vector3();
+            parentMarker.object3D.getWorldPosition(markerPos)            
+            var a = document.createElement('a-sphere')
+            a.setAttribute('scale', '0.4 0.4 0.4')
+            var scene = document.getElementById('marker_3')
+            // var currentPattern = document.getElementById('marker_')
+            var scenePos = new THREE.Vector3();
+            // console.log(markerPos)
+            
+            //obj.worldToLocal(markerPos)
+            //pos = new THREE.Vector3(markerPos.x - scenePos.x, markerPos.y - scenePos.y, markerPos.z - scenePos.z)
+            // markerPos = markerPos.clone().add(new THREE.Vector3(-scenePos.x, -scenePos.y, -scenePos.z));
+            console.log(markerPos, scenePos)
+            a.setAttribute('position', `${markerPos.x - scenePos.x} ${markerPos.y - scenePos.y} ${markerPos.z - scenePos.z}`)
+            var element = scene.appendChild(a)
+            element.object3D.position.set(markerPos.x, markerPos.y, markerPos.z)
+        //console.log('up fuck')
+        })
+       </script>
+   </body>
+
+</html>

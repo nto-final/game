@@ -1,0 +1,76 @@
+<html>
+    <head>
+      <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+      <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+      <style>
+        .button{
+            background-color: aquamarine;
+            width: 10vh;
+            height: 10vh;
+            position: absolute;
+        }
+        .up{
+            top: 0px;
+            left: 45%;
+        }
+        .down{
+            bottom: 0px;
+            left: 45%;
+        }
+        .left{
+            top: 45%;
+            left: 0px;
+        }
+        .right{
+            top: 45%;
+            right: 0px;
+        }
+      </style>
+    </head>
+    <body>
+      <a-scene
+      vr-mode-ui="enabled: false;"
+    renderer="logarithmicDepthBuffer: true;"
+    embedded
+    arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
+      >
+        <a-assets>
+            <img id="tx" src="texture.jpg">
+        </a-assets>
+        <a-marker preset="kanji">
+            <a-box id="control" src="#tx"></a-box>
+        </a-marker>
+        <a-entity camera></a-entity>
+      </a-scene>
+      <div class="up button" id="up"></div>
+    <div class="down button" id="down"></div>
+    <div class="right button" id="right"></div>
+    <div class="left button" id="left"></div>
+    </body>
+    <script>
+        var obj = document.getElementById("control")
+        let upb = document.getElementById("up")
+        let downb = document.getElementById("down")
+        let rightb = document.getElementById("right")
+        let leftb = document.getElementById("left")
+        var dx = 0.25
+        var pos = [0, 0, 0]
+
+        downb.onclick = () => {
+            pos[2] -= dx            
+            obj.setAttribute('position', `${pos[0]} ${pos[1]} ${pos[2]}`)
+        }
+        upb.onclick = () => {
+            pos[2] += dx
+            obj.setAttribute('position', `${pos[0]} ${pos[1]} ${pos[2]}`)
+        }
+        rightb.onclick = () => {
+            pos[0] -= dx
+            obj.setAttribute('position', `${pos[0]} ${pos[1]} ${pos[2]}`)
+        }
+        leftb.onclick = () => {
+            pos[0] += dx;
+            obj.setAttribute('position', `${pos[0]} ${pos[1]} ${pos[2]}`)
+        }
+      </script>
+  </html>

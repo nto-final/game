@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+   <title>7</title>
+   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+   <audio id="audio" src="/Background.mp3" autoplay></audio>
+   <audio id="audio1" src="/Win.mp3" autoplay></audio>
+
+   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+        .counter {
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 200px;
+            height: 100px;
+            position: fixed;
+            top: 0px;
+        }
+        .health{
+            top: 100px;
+        }
+        .timer {
+            top: 200px
+        }
+        .end-game{
+            width: 100%;
+            height: 90vw;
+            z-index: 10000;
+            display: none!important;
+        }
+    </style>
+   <body style="margin : 0px; overflow: hidden;">
+        <div class="counter" id="counter">
+            Счет: 0
+        </div>
+        <div class="counter health" id="health">
+            Жизней: 5
+        </div>
+        <div class="counter timer" id="timer">
+            Осталось: 
+        </div>
+        <div class="counter end-game" id="end-game">
+            Конец игры. У вас
+        </div>
+       <a-scene
+           embedded
+           arjs
+           renderer="logarithmicDepthBuffer: true;"
+           id="scene"
+           >
+        <a-marker id="red" type="pattern" url="letterB.patt" material="" arjs-hit-testing="" visible="">
+            <a-sphere position="0 0 0" radius="1.25" color="red" scale="0.1 0.1 0.1" material="" geometry=""></a-sphere>
+        </a-marker>
+        <a-marker preset='custom' type='pattern' url='letterA.patt' id="blue">
+            <a-sphere position="0 0 0" radius="1.25" color="blue" scale="0.1 0.1 0.1" material="" geometry=""></a-sphere>
+        </a-marker>
+        <a-marker id="yellow" preset="kanji" material="" arjs-hit-testing="" visible="">
+            <a-sphere position="0 0 0" radius="1.25" color="yellow" scale="0.1 0.1 0.1" material="" geometry=""></a-sphere>
+        </a-marker>
+        <a-marker id="quad" preset='custom' type='pattern' url='letterD.patt' arjs-hit-testing="" visible="">
+            <a-box position="0 0 0" radius="1.25" color="black" scale="0.3 0.3 0.3" material="" geometry=""></a-box>
+        </a-marker>
+        <a-marker id="destroy" preset='hiro' arjs-hit-testing="" visible="">
+            <a-box position="0 0 0" color="green" scale="0.3 0.3 0.3" material="" geometry=""></a-box>
+        </a-marker>
+        <a-marker id="recreate" preset='custom' type='pattern' url='letterF.patt' arjs-hit-testing="" visible="">
+            <a-box position="0 0 0" radius="1.25" color="magenta" scale="0.3 0.3 0.3" material="" geometry=""></a-box>
+        </a-marker>
+        <a-marker id="game" preset='custom' type='pattern' url='3.patt' arjs-hit-testing="" visible="">
+            <a-box color='yellow' scale="0.2 0.2 0.2" position="0 -0.5 -2"></a-box>
+            <a-box color='red' scale="0.2 0.2 0.2" position="-0.6 -0.5 -2"></a-box>
+            <a-box color='blue' scale="0.2 0.2 0.2" position="0.6 -0.5 -2"></a-box>
+        </a-marker>
+        
+       <a-entity camera></a-entity>
+       </a-scene>
+       <script>
+        var audio = document.getElementById('audio')
+        setTimeout(() => {
+            audio.play()
+        }, 1000)
+        var timeElapsed = 0;
+        function isEnemy() {
+            return document.getElementById('enemy') != null
+        }
+        function getEnemy() {
+            return document.getElementById('enemy')
+        }
+        function createEnemy() {
+            if (isEnemy()) return;
+            var colors = ['red', 'blue', 'yellow'];
+            var noShapeColors = ['red', 'blue', 'yellow', 'black']
+            var shapes = ['circle', 'cube', 'no-shape']
+            
+            var shape = shapes[Math.floor(Math.random()*shapes.length)];
+            var color = colors[Math.floor(Math.random()*colors.length)];
+            var element = null;
+            if (shape == 'cube') {
+                element = document.createElement('a-box')
+            } else {
+                element = document.createElement('a-circle')
+            }
+            if (shape == 'no-shape') {
+                element = document.createElement('a-cylinder')
+                element.setAttribute('rotation', '0 90 45')
+                var color = noShapeColors[Math.floor(Math.random()*noShapeColors.length)];
+            }
+            
+            element.setAttribute('position', '0 0 -2')
+            element.setAttribute('scale', '0.1 0.1 0.1')
+            element.setAttribute('color', color);
+            element.setAttribute('id', 'enemy')
+            element.setAttribute('class', color + ' ' + shape)
+            
+            var parent = document.getElementById('game')
+            parent.appendChild(element)
+
+        }
+        function endGame() {
+            var className = getEnemy().className.split(' ');
+            counter = document.getElementById('counter')
+            var count = parseInt(counter.innerHTML.split(': ')[1])
+            console.log(className, enemyDirection)
+            var shape = 'circle';
+            if (quad) shape = 'cube'
+            console.log(className, enemyDirection, shape)
+            if (className[0] == enemyDirection && className[1] == shape) {
+                counter.innerHTML = 'Счет: ' + (count + 1).toString();
+                document.getElementById('audio1').play( )
+            }
+            else if (className[1] != shape){
+                health = document.getElementById('health')
+                healthContent = parseInt(health.innerHTML.split(': ')[1])
+                counter.innerHTML = 'Счет: ' + (0).toString()
+                health.innerHTML = 'Жизней: ' + (healthContent - 1).toString()
+            }
+            if (shape == 'no-shape') {
+                health = document.getElementById('health')
+                healthContent = parseInt(health.innerHTML.split(': ')[1])
+                counter.innerHTML = 'Счет: ' + (0).toString()
+                health.innerHTML = 'Жизней: ' + (0).toString()
+            }
+            var t = 5000;
+            if (timeElapsed > 1000 * 20) {
+                t = 3000
+            }
+            if (timeElapsed > 1000 * 40) {
+                t = 2000
+            }
+            setTimeout(() => {
+                createEnemy()
+            }, t)
+        }
+        function updateTimer() {
+            var time = 120 - Math.floor((timeElapsed / 1000))
+            var s_minutes = Math.floor(time / 60)
+            var s_seconds = time % 60
+            var timer = document.getElementById('timer')
+            if (time <= 0) {
+                var ending = document.getElementById('end-game')
+                var pts = document.getElementById('counter').innerHTML.split(': ')[1]
+                ending.innerHTML = 'Конец игры. У вас ' + pts + ' баллов'
+                ending.style = 'display: flex!important;';
+            }
+            timer.innerHTML = 'Осталось - ' + `${s_minutes}:${s_seconds}`
+        } 
+        function createNormal(position) {
+            var colors = ['red'];
+            var shapes = ['cube']
+            
+            var shape = shapes[Math.floor(Math.random()*shapes.length)];
+            var color = colors[Math.floor(Math.random()*colors.length)];
+            var element = null;
+            if (shape == 'cube') {
+                element = document.createElement('a-box')
+            } else {
+                element = document.createElement('a-circle')
+            }
+            if (shape == 'no-shape') {
+                element = document.createElement('a-cylinder')
+                element.setAttribute('rotation', '0 90 45')
+            }
+            
+            element.setAttribute('position', position)
+            element.setAttribute('scale', '0.1 0.1 0.1')
+            element.setAttribute('color', color);
+            element.setAttribute('id', 'enemy')
+            element.setAttribute('class', color + ' ' + shape)
+            
+            var parent = document.getElementById('game')
+            parent.appendChild(element)
+        }
+        var yellow = false;
+        var blue = false;
+        var red = false;
+        var quad = true;
+        var destroy = false;
+        var recreate = false;
+        var enemyMoving = false;
+        var enemyDirection = null;
+        
+        var yellowMarker = document.getElementById('yellow')
+        yellowMarker.addEventListener('markerFound', () => {
+            yellow = true;
+        })
+        yellowMarker.addEventListener('markerLost', () => {
+            yellow = false;
+        });
+        
+        var blueMarker = document.getElementById('blue')
+        blueMarker.addEventListener('markerFound', () => {
+            blue = true;
+        });
+        blueMarker.addEventListener('markerLost', () => {
+            blue = false;
+        });
+
+        var redMarker = document.getElementById('red')
+        redMarker.addEventListener('markerFound', () => {
+            red = true;
+        });
+        redMarker.addEventListener('markerLost', () => {
+            red = false;
+        });
+
+        var quadMarker = document.getElementById('quad')
+        quadMarker.addEventListener('markerFound', () => {
+            quad = true;
+        });
+        quadMarker.addEventListener('markerLost', () => {
+            quad = false;
+        });
+
+        var destroyMarker = document.getElementById('destroy')
+        destroyMarker.addEventListener('markerFound', () => {
+            destroy = true;
+        });
+        destroyMarker.addEventListener('markerLost', () => {
+            destroy = false;
+        });
+
+        var recreateMarker = document.getElementById('recreate')
+        recreateMarker.addEventListener('markerFound', () => {
+            recreate = true;
+        });
+        recreateMarker.addEventListener('markerLost', () => {
+            recreate = false;
+        });
+        
+        setTimeout(() => {
+            createEnemy()
+        }, 1000);
+        setInterval(() => {
+            if (yellow && blue && !red) {
+                enemyMoving = true;
+                enemyDirection = 'red';
+            }
+            if (!yellow && blue && red) {
+                enemyMoving = true;
+                enemyDirection = 'yellow'
+            }
+            if (yellow && !blue && red) {
+                enemyMoving = true;
+                enemyDirection = 'blue'
+            }
+            //console.log(destroy, getEnemy().className.split(' '))
+            if (destroy && getEnemy().className.split(' ')[1] == 'no-shape') {
+                var pos = getEnemy().getAttribute('position')
+                getEnemy().remove()
+
+                //createNormal(pos)
+            }
+            if (recreate && getEnemy().className.split(' ')[1] == 'no-shape') {
+                var pos = getEnemy().getAttribute('position')
+                getEnemy().remove()
+                createNormal(pos)
+            }
+            if (enemyMoving && isEnemy()) {
+                var enemy = getEnemy();
+                if (enemyDirection == 'yellow') {
+                    console.log('fuck')
+                    if (enemy.object3D.position.y < -1) {
+                        enemyMoving = false;
+                        endGame();
+                        enemyDirection = null;
+                        getEnemy().remove();
+                        return;
+                    }
+                    getEnemy().setAttribute('position', `${enemy.object3D.position.x} ${enemy.object3D.position.y-0.01} ${enemy.object3D.position.z}`)
+                }
+                if (enemyDirection == 'red') {
+                    var enemy = getEnemy();
+                    if (enemy.object3D.position.y < -1 && enemy.object3D.position.x < -1) {
+                        enemyMoving = false;
+                        endGame();
+                        enemyDirection = null;
+                        getEnemy().remove();
+                        return;
+                    }
+                    getEnemy().setAttribute('position', `${enemy.object3D.position.x-0.005} ${enemy.object3D.position.y-0.006} ${enemy.object3D.position.z}`)
+                }
+                if (enemyDirection == 'blue') {
+                    var enemy = getEnemy();
+                    if (enemy.object3D.position.y < -1 && enemy.object3D.position.x > 1) {
+                        enemyMoving = false;
+                        endGame();
+                        enemyDirection = null;
+                        getEnemy().remove();
+                        return;
+                    }
+                    getEnemy().setAttribute('position', `${enemy.object3D.position.x+0.005} ${enemy.object3D.position.y-0.006} ${enemy.object3D.position.z}`)
+                }
+                //enemy.object3D.position.set(enemyPos.x+0.1, enem)  
+            }
+            timeElapsed += 10;
+            updateTimer() 
+        }, 10);
+       </script>
+   </body>
+
+</html>
