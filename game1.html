@@ -64,13 +64,13 @@
         <audio src="audios/10.m4a" id="10"></audio>
         <audio src="audios/11.m4a" id="11"></audio>
         <audio src="audios/12.m4a" id="12"></audio>
-        <div id="menu-buttons" style="display: block;">
+        <div id="menu-buttons" style="display: none;">
             <div class="points">
                 <span id="apples">
                     Яблок: 0
                 </span>
                 <span id="pears">
-                    Груш: 0
+                    Бревен: 0
                 </span>
                 <span id="cake">
                     Тортов: 0
@@ -96,7 +96,7 @@
                         Выдать яблоко
                     </button>
                     <button id="grapes__controller">
-                        Выдать грушу
+                        Выдать бревно
                     </button>
                     <button id="cake__controller">
                         Выдать торт
@@ -142,7 +142,7 @@
                 update('apples', 'Яблок', 1)
             }
             function updatePears() {
-                update('pears', 'Груш', 1)
+                update('pears', 'Бревен', 1)
             }
             function updateCakes() {
                 update('cake', 'Тортов', 1)
@@ -265,8 +265,11 @@
                 element.setAttribute('position', '0 4 0')
                 element.setAttribute('gltf-model', item)
                 element.setAttribute('class', 'item')
+                if (item == 'brevno.glb') {
+                    element.setAttribute('scale', '0.4 0.4 0.4')
+                }
                 if (item == 'apple.glb') {
-                    element.setAttribute('scale', '0.2 0.2 0.2')
+                    element.setAttribute('scale', '0.1 0.1 0.1')
                 } if (item == 'cake.glb') {
                     element.setAttribute('scale', '0.1 0.1 0.1')
                 }
